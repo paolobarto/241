@@ -144,4 +144,171 @@ The process of designing the general structure of the database:
   * Normalization theory
 * Physical Design - Deciding on the physical layout of the database
   
-## Database Engine
+# 8/24 
+
+## SQL Parts
+* DML
+  * Provides the ability to query information from the database and to insert tuples into, delete tuples from, and modify tuples in the database
+* integrity - the DDL includes commands for speficfying integrity constraints
+* View Definition - The DDL includes commands for defining views
+* Transaction control - includes commands for defining views
+* Transaction control - inculdes commands for specygin the beginning and ending of 
+* Embedded transactionsSQl and Dynamic SQL - define how sql statements can be embedded
+
+
+## Data definintion language
+The SQL data-definition language (DDL) allows the specification of information about relations, including:
+* The schema for each relation
+* The type of values associated with each attribute
+* The integrity constraints 
+* The set of indicies 
+
+
+<a href="https://ibb.co/ZNCdzLn"><img src="https://i.ibb.co/1bxZGvD/image.png" alt="image" border="0"></a>
+
+<a href="https://ibb.co/hdTTvv6"><img src="https://i.ibb.co/NNGGzzv/image.png" alt="image" border="0"></a>
+
+## Integrity Constraints to create a table 
+* Types of integrity constraints 
+  * Primary key (must be not-null and unique)
+  * foreign key (refereances r) another table (reference table)
+  * not null
+* SQL prevents any update to the database that violates an integrity constraint
+* Example:
+
+```sql
+create table instructor (
+  ID        char(5),
+  name      varchar(20) not null,
+  dept_name varchar(20),
+  salary    numeric(8,2),
+  primary key (ID),
+  foreign key (dept_name)references department
+)
+
+```
+
+<a href="https://ibb.co/fkfc1Bv"><img src="https://i.ibb.co/GWyhxBT/image.png" alt="image" border="0"></a>
+
+## Updates to tables
+* Insert
+  * insert into `instructor` values `('10211','Smith','Biology',66000)`
+* Delete
+  * Removes all tuples from the student relation
+    * `delete from student`
+* Drop table
+  * `drop table r`
+* Alter 
+  * `Alter table r add A D`
+    * Where A is the name of the attribute to be added to relation r and D is the domain of A
+    * All existing tuples in the relation are assigned null as the value for the new attribute
+  * `Alter table r drop A`
+    * Where A is the name of an attribute of relation r
+    * Dropping of attributes not suppported by many databases
+
+## Basic Query structure
+* A typical SQL query has the form: 
+```sql
+ select A1, A2,...An
+ from r1,r2,...rn
+  where P
+```
+
+  * Ai represents an attribute
+  * Ri represents a relation
+  * P is a predicate
+* The result of an SQL query is a relation
+
+## The select Clause
+* The **select** clause lists the attributes desired in the result of a query
+  * Corresponds to the projection operation of the relational algebra
+  * Erasing the columns that are not listed
+* Example: find the names of all instructors
+```sql
+select name
+from instructor
+```
+
+* NOTE: SQL names are case insensitive (i.e., you may use upper - or lower-case letters.)
+  * E.g., Name = NAME = name
+  * Some people use uppercase whenever we use bold font
+  * The result is a relation
+
+* SQL allows duplicates in relations as well as in query results
+* To force elimination of duplicates, insert the keyword distinct after select
+* Find the department names of all instructors, remove all duplicates 
+
+```sql
+select distinct dept_name
+from instrcuctor
+```
+
+* the keyword **all** specifies that duplicates should not be removed
+
+
+* An asterisk in the select clause denotes "all attributes"
+```sql
+select *
+from instructor
+```
+
+* An attribute can be a literal with no from clause
+`select '437'`
+  * Results is a table with one column and a single row with value "437"
+  * Can give the column a name using 
+  `select '437' as FOO`
+* An attribute can be a literal with **from** clause
+```sql
+select 'A'
+from instructor
+```
+* The select clause can contain aritmatic expressions involving the operation, +,-,*, and /, and operating on constraints or attributes of tuples
+  * The Query 
+  
+``` sql
+select ID,name, salary/12
+from instructor
+```
+
+* can rename "salary/12" using as clause:
+* `select ID,name,salary/12 as monthly_salary`
+
+## The where clause
+* The where clause specifies conditions that the result must satisy
+  * Corresponds to the slection predicate of the relation algebra
+
+``` sql
+select name
+from instructor
+where dept_name = 'comp. sci'
+```
+
+* SQL allows the use of the logical connectives and, or, and not
+* The operands of the logical connectives can be expressions involving the comparison operators <,<=,>,>=, =, and <> (not equal to)
+* Comparisons can be applied to results of arithmetic expressions 
+* To find all instructors in Comp. Sci. dept with salary > 80000
+
+```sql
+select name
+from instructor
+where dept_name = 'Comp. Sci' and salary > 80000
+
+```
+
+## The from Clause
+* The from clause lists the relations involved in the query
+  * Corresponds to the Cartesian product operation of the relational algrbra
+* Find the Cartesian product instructor X teaches
+```sql
+select * 
+from instructor,teaches
+```
+* Notation: `instructor X teaches`
+* Generates every possible instructor - teaches pair, with all attributes from both relations
+* For common attributes (e.g, ID) the attributes in the resulting table are renamed using the relation name (e.g., instructor.ID)
+  * How many rows are in the resuling relation
+* Cartesian product not very useful directly but useful combined with where-clause condition (selection operation in relational algebra)
+
+<a href="https://ibb.co/x8nJk6c"><img src="https://i.ibb.co/rfB4jHL/image.png" alt="image" border="0"></a>
+
+<a href="https://ibb.co/gJVgDYJ"><img src="https://i.ibb.co/DQpK7dQ/image.png" alt="image" border="0"></a>
