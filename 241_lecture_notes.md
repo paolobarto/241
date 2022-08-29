@@ -312,3 +312,243 @@ from instructor,teaches
 <a href="https://ibb.co/x8nJk6c"><img src="https://i.ibb.co/rfB4jHL/image.png" alt="image" border="0"></a>
 
 <a href="https://ibb.co/gJVgDYJ"><img src="https://i.ibb.co/DQpK7dQ/image.png" alt="image" border="0"></a>
+
+
+# 8/29
+
+## Aggrigate Functions
+* These funcitons operate on the multiset of values of a column of a relation and return a value
+
+* avg: average value
+* min: minimum value
+* max: maximum value
+* sum: sum of values
+
+
+
+
+* Find the average salary of instructors in the cs department
+```sql
+select avg(salary)
+from instructor
+where dept_name='Comp sci'
+
+```
+
+* Find the total number of instructors who teach a course in the Spring 2018 semester
+```sql
+select count (distinct ID)
+from teaches
+where semester = 'Spring' and year = 2018;
+```
+* Find the number of tuples in the course relation
+```sql
+select count(*)
+from course;
+```
+
+**Aggrigate functions - group by**
+
+* Find the average salary of instructors in each department
+```sql
+select dept_name, avg(salary) as avg_salary
+from instructor
+group by dept_name;
+```
+
+* Attributes in select clause outside of aggrigate functions must appear in _group by_ list
+  INCORRECT QUERY
+```sql
+select dept_name,ID,avg(salary)
+from instructor
+group by dept_name
+```
+ID in this case is incorrect becuase it represents multiple duplicate records in the table
+
+
+### Having Clause
+* Find the names and average salaries of all departments whose average salary is greater than 42000 (over a group not on individual row)
+
+```sql
+select dept_name, avg(salary) as avg_salary
+from instructor
+group by dept_name
+having avg(salary)>42000
+```
+
+* Note: predicates in the having clause are applied after the formation of groups whereas predicates in the where clause are applied before forming groups
+
+```sql
+select dept_name
+from instructor natural join teaches natural join section
+where semester = 'Spring' and year =2007
+group by dept_name
+having count (distinct id)>2
+```
+
+## Nested Subqueries
+* SQL provides a mechanism for the nesting of subqueries. A subquery is a selct-from-where expression that is nested within another query.
+* The nesting can be done in the following SQL query
+
+```
+select A1,A2,...
+```
+
+### Set membership
+To check if an element is in a set or not
+
+* Find courses offered in Fall 2017 and spring 2018
+
+```sql
+select distinct course_id
+from section
+where semester='Fall' and year = 2017 and
+course_id in (select course_id
+              from section
+              where semester = 'Spring' and year =2018)
+```
+
+* Find courses offered in Fall 2017 but not in Spring 2018
+```sql
+select distinct course_id
+from section
+where semester='Fall' and year = 2017 and course_id not in (
+  select course_id
+  from section
+  where semester = 'Spring' and year =2018
+);
+
+```
+
+subquery can be seen as a function that is called for each record visited in the other query
+
+
+* Name all instructors whose name is neither "Mozart nor Einstein"
+
+```sql
+select distinct name
+from instructor
+where name not in ("Mozart","Einstein")
+```
+
+* Find the total number of (distinct) students who have taken course sections taught by the instructor with ID 10101
+
+```sql
+select count (distinct ID)
+from takes
+where (course_id,sec_id,semster,year) in (
+  select course_id, sec_id, semester, year
+  from teaches
+  where teaches.ID = 10101
+);
+```
+
+* Note: Above query can be written in a much simpler manner.
+* The formulation above is simple to illustrate SQL features
+  * Can be done using a Cartesian product
+
+## Set Comparison - "some" clause
+* Find the name of instructors with salary greater than that of some (at least one) in the Biology department
+```sql
+select distinct T.name
+from instructor as T, instructor as S
+where T.salary > S.salary and S.salary.dept_name = 'Biology'
+```
+* Same query using > some clause
+
+```sql
+select name
+from instructor
+where salary>some(
+  select salary
+  from instructor
+  where dept_name = 'Biology'
+);
+```
+"salary>some" is set comparison
+
+<a href="https://ibb.co/bWHL4Xf"><img src="https://i.ibb.co/7YgV3K9/image.png" alt="image" border="0"></a>
+
+## Set comparison - "all" clause
+
+* Find the names of all instructors whose salary is greater than the salary of all instructors in the Biology department
+
+```sql
+select name 
+from instructor
+where salary>all(
+  select salary
+  from instructor
+  where dept_name = 'Biology'
+);
+```
+### Test for empty relations 
+* The exists construct return the value true if the argument subquery is nonempty
+* Exists (r contatins records)
+* Not Exists (r contains no records)
+
+### Use of "exists" clause
+* yet another way of specifying "Find all courses taught both in the Fall 2017 semester and in the Spring 2018 semester"
+```sql
+select course_id 
+from section as S
+where semester = "Fall" and yar = 2017 and exists (
+  select *
+  from section as T
+  where semester = 'Spring' and year = 2018
+  and S.course_id=T.coursee_id
+);
+```
+
+* What's going on?
+  * subquery is like a sub-prodeudre
+  * outer query calls the function
+  * can pass paramters in: S.course_id
+* Correlation name - variable S in the outer query
+* Correlated subquery - the inner query
+
+
+
+* Find instructors who earn more than all the instructors in the Math
+```sql
+select id
+from instructors as S
+  where not exists (
+    select *
+    from instructor as T
+    where dept_name='math'
+    and T.salary>=S.salary
+)
+```
+* Find all students who have taken all courses offered in the Biology deprtment
+```sql
+select distinct S.ID, S.name
+from student as S
+where not exists((
+  Select course_id
+  from course 
+  where dept_name = "Biology")
+  except(
+    select T.course_id
+    from takes as T
+    where S.ID = T.ID
+  )
+  );
+```
+* First nested query lists all courses offered in Biology
+* Second nested query lists all courses a particular student took
+
+
+## Test for Absense of Duplicate Tuples
+* the unique construct tests wheather a subquery has any duplicate tuples in its resuly
+* The unique construct evaluate to "true" if a given subquery contains no duplicates
+* Find all courses that were offered at most once in 2017
+
+```sql
+select T.course_id
+from course as T
+where unique (select R.course_id
+from section as R
+where T.course_id=R.course_id
+and R.year=2017)
+```
