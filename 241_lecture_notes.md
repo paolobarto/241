@@ -552,3 +552,182 @@ from section as R
 where T.course_id=R.course_id
 and R.year=2017)
 ```
+
+
+# 8/31 
+
+## Joined Relations
+* Join operations take two relations and return as a result another relation
+
+### Natural Join in SQL
+
+* It is a type of inner join
+* Natural join matches tuples witht the same calues for all common attributes, and retains only one copy of each common column
+* List the names of instructors along with the course ID of the courses that they taught
+
+```sql
+select name, course_id
+from students, teach
+where student.id=teach.id
+```
+same query in sql with "natural join" construct
+```sql
+select name,course_id
+from student natural join takes
+
+```
+
+* A From clause can have multiple relations combined using natural join
+```
+select A1,A2,..An
+from r1 natural join r2 natual join rn
+where P;
+
+```
+**Natural Join takes place prior to where**
+
+**Dangerous natural join**
+
+* beware of unrealted attributes with same name which get equated incorrectly
+* Example -- List the names of students along with the titles of courses that they have taken
+  * Correct version
+```sql
+select name,title
+from student natural join takes, course
+where takes.course_id=course.course_id
+```
+* Incorrect version
+
+```sql
+select name,title
+from student natural join takes natural join course
+
+```
+
+* This qury omits all pairs where the student takes a course in a department other than the student's own department
+* The correct version (above), correctly outputs such pairs
+
+## Natural join with using clause
+
+* to avoid the danger of equating attributes erroneously, we can use the "using " construct that allows us to specifiy exactly which columnd should be equated
+* query example
+```sql
+select name, title
+from (student natural join takes) join course using (course_id)
+```
+
+* course_id attributes from two tables will be merged into one
+* Two joined tuples may not have the same value on attributes that are not in the using list
+
+### Join Condition
+
+* The on condiditon allows a general predicate over the realtions being joined
+* This predicate is written lise a where cluase predicate except for the use of the keyword on
+* example
+
+```sql
+select *
+from student join takes on student_id = takes_id
+```
+* the on condition above specifies that a tuple from student matches a tuple from takes if their ID values are equal
+*  Equavelnt to
+
+```sql
+select *
+from student,takes
+where student_id=takes_id
+```
+
+* select * from course join prereq
+  * on prereq.course_id=course_id;
+  * both course_id of the two relations will be retained
+
+
+### Outer join
+* an extension of the join operation that avoids loss of information
+* Computes the join and then adds tuples from one relation that does not match tuples in the other relation to the result of the join
+* Uses null values
+* THree forms of outer join
+  * Left outer join
+  * right outer join
+
+
+#### Left outer join
+* Course natural left outer join prereq
+
+ALthough there is no matching records in join, the non matching relation will still be included
+
+
+#### Right outer join
+* Prioritizing all values of the right including when not included
+
+#### Full Outer Join
+
+* Retaining all joined values in realted tables
+  
+
+## Joined types and conditions
+* Join operations - take two relations and return as a result another operation
+* These additional operations are typically used as subquery ewxpressions in the from clause
+* Join condition - defines which tuples in the two relations match
+* Join type - defines how the tuples in each realtion that do not match any tuple in the other relation are treated
+
+
+## Views
+* In some cases, it is not desireable for all users to see the entire logical mofel (that is, all the actual relations stored in the database)
+* Consider a person who needs to know an instructors name and department, but no the salary. This person should see a relation described in sql by
+
+* A view is defined using the create view statement which has the form create view v as < qury expression > where expression is any legal sql expression the view name is represented by v
+* Once a view is defined, the view name can be used to refer to the virtual relation that the view generates
+* view definition is not the same as createing a new relation by evaluating the quert expression
+  * Ratherm a view definitoin causes the saving of the expression; the expression is subsituted into queries using the view
+
+* A view of instructors without their slary
+```sql
+create view faculty as 
+select ID, name, dept_name
+from instructor
+```
+* Find all instrcutors in the biology department
+```sql
+select name
+faculty
+where dept_name='Biology'
+```
+
+### Vies defined using other views
+* One view may be used in the expression defining another view
+* A view relation V1 is said to depend directly on a view relation v2. If v2 is used in the expression defining v1
+* A view relation v1 is said to depend on view relaiton v2 if either 
+
+<a href="https://ibb.co/BsKn9yz"><img src="https://i.ibb.co/w6rcfS0/image.png" alt="image" border="0"></a>
+
+
+### Materialized Views
+
+* Certain database systems allow view relations to be physcially stored
+  * Physical cope created when the view is definiend
+  * Such views are called materialized view
+* If relations used in the query are updated, the materialized view result becomes out of date
+  * Need to maintain view when data is changed
+
+
+### Update a view
+* Add a new tuple to faculty view which we definied earlier
+```sql
+insert into facult
+  values ('30765','Green','Music');
+```
+* this insertaion must be represented by the insertion into the instructor relation
+  * Must have a value for salary
+* Two approaches
+  * Reject the insert
+  * Inset the tuple ('30765','Green','Music',null)
+  * into the instructor relation
+
+
+### View Updates in SQL
+
+* Most SQL implementations allow updates only on simple views
+  * The from clause has only one database relation
+  * The select clause contains only attribbutes names of the relation and does not have any expressions, aggrigates, 
