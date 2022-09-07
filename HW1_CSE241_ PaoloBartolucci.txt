@@ -1,0 +1,52 @@
+select ID
+from instructor
+where dept_name='Math'
+--------------------------------------------------------------
+select (takes.course_id),course.title,takes.grade
+from takes,course
+where takes.id = 10101 and takes.course_id=course.course_id
+order by cast(takes.course_id as int) 
+
+--------------------------------------------------------------
+
+select distinct student.ID,student.name,student.tot_cred
+from student
+where student.tot_cred>100 and student.dept_name='Mech. Eng.' and student.id in (
+    select takes.id
+    from takes,course
+    where takes.course_id=course.course_id and course.dept_name='Music'
+)
+order by student.tot_cred desc
+
+--------------------------------------------------------------
+
+
+select student.id,student.name
+from student
+where student.dept_name='Statistics' and student.tot_cred<some(
+    select tot_cred/10
+    from student
+    where student.dept_name = 'Statistics'
+)
+--------------------------------------------------------------
+
+
+select avg(salary)
+from instructor
+where dept_name ='Philosophy'
+
+--------------------------------------------------------------
+select dept_name,count(id) as total_advised
+from instructor,advisor
+where instructor.id=advisor.i_id
+group by dept_name
+order by dept_name
+--------------------------------------------------------------
+
+select distinct takes.course_id as course, takes.id as ID
+from student join takes on student.id = takes.id
+group by takes.id, takes.course_id
+having count(*)>2
+order by takes.course_id 
+
+

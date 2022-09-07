@@ -731,3 +731,94 @@ insert into facult
 * Most SQL implementations allow updates only on simple views
   * The from clause has only one database relation
   * The select clause contains only attribbutes names of the relation and does not have any expressions, aggrigates, 
+
+
+
+
+
+# 9/7 
+
+## outline of ER model
+
+* The ER data mode was developed to facilitate database design by allowing specification of an eterprise schema that represents the overall logocal structure of the database
+* The ER data model employs three basic conceptws
+  * Entity sets
+  * relationship sets
+  * attributes
+* The ER model also has an associated diagrammatic representation, the ER diagram which can express the overall logical structure of a database graphically
+
+## Entity Set
+* An entity is an object that exists and is distinguinshable from other objects
+* An entity set is a set of entities of the same type that share the same properties
+* An entitiy is represented by a set of attributes; i.e., descriptive properties possessed by all members of an entity set
+  * Example
+```
+instructor=(ID,name,salary)
+course=(course_id,title,credits)
+```
+* a subset of attributes form a primary key of the entity set; i.e., unquely identifying each member of the set
+* Entity sets can be represented graphically as follows:
+* rectangles represent entity sets
+* Attributes listed insisde entity rectangle
+* Underline indicates primary key attributes
+
+## Relationship sets
+[![image.png](https://i.postimg.cc/5y928pGf/image.png)](https://postimg.cc/ftFsN7DP)
+
+[![image.png](https://i.postimg.cc/g0ngMPC7/image.png)](https://postimg.cc/gwbyJ1ky)
+
+[![image.png](https://i.postimg.cc/8PxcFd1r/image.png)](https://postimg.cc/2VFrMZLz)
+
+[![image.png](https://i.postimg.cc/3N5781jK/image.png)](https://postimg.cc/N94Zb1PV)
+
+## Roles
+* Entity sets of a relationship need not be distinct
+  * Each occurance of an entity set plays a "role" in the relationship
+* The lables "course_id" and "prereq_id" are called roles
+
+## Degree of a relationship set
+* Binary relationship
+  * Involve two entity sets (or degree two)
+  * most relationship sets in a database system are binary
+* Relationships between more than two entity sets are rare. Most relationships are binary
+  * Example: students work on research projects under the guidance of an instructor
+  * relationship proj_guide is a ternary relationship between instructor,
+  * relationship proj_guide is a ternary relationship 
+
+
+## Complex Attributes
+* Attribute types
+  * Simple (or atomic) and composite attributes
+    * "CSE-241" atomic or composite
+  * Single-valued and multivalued attributes
+    * Example: multivalues attribute: phone_numbers
+  * Derived attribtues
+    * Can be computed from other attributes
+    * Example: age, given date_of_birth
+  * Domain- the set of permitted values of each attribute
+
+[![image.png](https://i.postimg.cc/6pfdd6MK/image.png)](https://postimg.cc/yDWgKKqp)
+
+[![image.png](https://i.postimg.cc/Zn5ghD0B/image.png)](https://postimg.cc/0MhZYnYP)
+
+## Mapping cardinality constraints
+* Express the number of entities o=to which another entity can be associated via a relationship set
+* Most usefule in describing relationship sets
+* For a binary relationship set the mapping cardinality mist be one of the following types
+  * One to noe
+  * one to many
+  * many to one
+  * many to many
+
+
+* We express cardinality constraints by drawing either a directed line, signifying one ore and undirected line signifying meny, between the relationship set and the entity set
+
+[![image.png](https://i.postimg.cc/FK7FZDhZ/image.png)](https://postimg.cc/yJCz6hgg)
+
+[![image.png](https://i.postimg.cc/gkgPT8SB/image.png)](https://postimg.cc/QHKPB9rp)
+
+[![image.png](https://i.postimg.cc/G3Q04vCh/image.png)](https://postimg.cc/RqNp86hj)
+
+[![image.png](https://i.postimg.cc/CLSqNTXs/image.png)](https://postimg.cc/pycrW72m)
+
+In ER design there is no concept called foreign key
