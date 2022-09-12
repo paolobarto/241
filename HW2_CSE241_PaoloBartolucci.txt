@@ -1,0 +1,128 @@
+select distinct T.id
+from (
+    select id,course_id
+    from takes
+    group by id,course_id
+    having count(*)>1
+) T
+group by T.id
+having count(*)>2
+order by T.id
+
+----------------------------------------------
+
+select distinct I.name, I.id
+from instructor I
+where id=all(
+    select teaches.id
+    from teaches, course
+    where  course.dept_name=I.dept_name
+)
+order by name
+
+
+
+----------------------------------------------
+
+
+select distinct name,id
+from student s
+where name like 'F%'
+and s.dept_name='Cybernetics'
+and 4<((
+    select c.course_id
+    from course c
+    where c.dept_name='music')
+    -
+    (select t.course_id
+     from takes t
+     where t.id=s.id))
+order by name
+
+----------------------------------------------
+select avg(salary),sum(salary), count(*)
+from instructor
+
+select *
+from instructor
+where salary is null
+
+The average is excluding the null value, where as the calculated average does not take that into account
+----------------------------------------------
+
+select id
+from instructor
+minus
+select id 
+from teaches
+
+
+select i.id
+from instructor i left outer join teaches t on i.id=t.id
+where t.id is null
+
+
+select id
+from instructor
+where id not in (
+    select i.id
+    from instructor i,teaches t
+    where i.id=t.id
+)
+----------------------------------------------
+
+(A) no, since all 3 queries are based on id comparison as opposed to full row comparison. Each will evaluate teaches based on the compared id from the list of id in the instructor table
+
+(B) Each member of the teaches table is a primary key in another. Being that it represents a primary key, the primary key must be NOT NULL. 
+
+
+----------------------------------------------
+
+create table physicsinstructor
+(ID varchar (5),
+name varchar (20) not null,
+dept_name varchar (20),
+salary numeric (8,2) check (salary > 29000),
+primary key (ID));
+
+create table physicscourse
+    (ID varchar(5),
+    name    varchar(20) not null,
+    dept_name   varchar(20),
+    salary numeric(8,2) check (salary > 29000),
+    primary key (ID));
+
+create table physicsteaches
+    (ID varchar(5),
+    course_id    varchar(8),
+    sec_id   varchar(8),
+    semester varchar(6),
+    year numeric (4,0),
+    primary key (ID, course_id, sec_id, semester, year));
+
+
+insert into physicsinstructor
+select * 
+from instructor
+where dept_name='Physics'
+
+insert into physicscourse
+select * 
+from course
+where dept_name='Physics'
+
+insert into physicsteaches
+select t.id,t.course_id,t.sec_id,t.semester,t.year
+from teaches t,course c
+where t.course_id=c.course_id and c.dept_name='Physics'
+
+
+insert into physicsinstructor
+values (2,'Duo','Physics',99999)
+
+insert all physicsteaches
+values (2,202,1,'Fall',2016),(2,283,1,'Fall',2016);
+
+
+
+

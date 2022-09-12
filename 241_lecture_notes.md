@@ -822,3 +822,76 @@ course=(course_id,title,credits)
 [![image.png](https://i.postimg.cc/CLSqNTXs/image.png)](https://postimg.cc/pycrW72m)
 
 In ER design there is no concept called foreign key
+
+
+
+# 9/12/2022
+
+## Weak Entity Sets 
+* Consider a section entity which is uniquely identified by a course_id, semester, year, and sec_id
+* Clearly, section entities are related to course entitties suppose we create a relationship set sec_course between entity sets section and course
+* Note that the information in sec_course is redundant, since section already has an attribute course_id, which identifies the course with which the section is related
+* One option to deal with this redundancy is to get rid of the relationship sec_course; however, by doing so the relationship between section and course becomes implicit in an attribute, which is not desirable
+* An alternative way to deal with this redundancy is to not store the attribute course_id in the section entity and to only store the remaining attributes section_od, year, and semester
+  * However the entity set section then does not have enough attributes to identify the particular section entity uniquely
+* To deal with this problem, we treat the relationship sec_course as a special relationship that provides extra information, in this case, the course_id, required to identify the section entities uniquely
+* A weak entity set is one whose existence is dependent on another entity, cakked its identifying entity
+* Instead of associating a primary key with a weak entity, we use the identifying entity, along with extra attributes called discriminator to uniquely identify a weak enity
+* An entity set that is not a weak entity set is termed a strong entity set
+* Every weak entity mist be associated with an identfying entity; that is, the wek entity set is said to be existent dpenedent on the identifying entity set
+  
+[![image.png](https://i.postimg.cc/B6BxqVrH/image.png)](https://postimg.cc/R6q3dXVZ)
+
+[![image.png](https://i.postimg.cc/wjPrY1zL/image.png)](https://postimg.cc/qNsw8Mzv)
+
+[![image.png](https://i.postimg.cc/FF3LQztc/image.png)](https://postimg.cc/Wtp3G21b)
+
+## Reduction to relation Schemas
+
+* Entity sets and relationship sets can be expressed uniformly as relation schemas that represent contents of the database
+
+[![image.png](https://i.postimg.cc/RVqqZZyX/image.png)](https://postimg.cc/RN5vP4MH)
+
+[![image.png](https://i.postimg.cc/m20Mx9kQ/image.png)](https://postimg.cc/fJfkmJxL)
+
+* A multivalued attribute M of an entitiy E is represented by a seperate schema EM 
+* Schema EM has attributes corresponding to the primary key of E and an attribute corresponding to multivalued attribute M
+* Example: Multivalued attribute phone_number of instructor is represented by a schema:
+  * inst_phone=(ID,phone_number)
+* Each value of the multivalued attribute maps to a seperate tuple of the relation on schema EM
+  
+[![image.png](https://i.postimg.cc/fyHbwGM3/image.png)](https://postimg.cc/zHgN7Pb5)
+
+[![image.png](https://i.postimg.cc/QMQbtbwg/image.png)](https://postimg.cc/jWjN3zsC)
+
+* For one-to-one relationship sets, either side can be cohesn to act as the "many" side
+  * Reduces to a special "many-to-one" case
+  * That is , an extra attribute can be added to wither of the tables corresponding to the two entity sets 
+  * E.g., onto-to-one instructor advising student relationship. Add an attribute "advises" to the instructor schema
+* If participation is partial on the "many" side replacing a schema by an extra attribute in the schma corrsponding to the many" side could result in null values
+  * If an instructor advises no one, advises = null
+
+
+## Specialization
+* Overlapping - employee and student
+* Dijoint - instructor and secretary
+* Total and partial 
+* These are all out of business considerations 
+  
+[![image.png](https://i.postimg.cc/rwF8JSB8/image.png)](https://postimg.cc/2VMRjBjJ)
+
+* Method 1
+  * Form a schema for the higher-level entity
+  * Form a schema for each lower entity set, include primary key of higher level entity set and local attributes
+  * Drawback: getting information about, an employee requires accessing two relations, the one corresponding to the low-level schma and the one corrsponding to the high-level schema 
+[![image.png](https://i.postimg.cc/4dbNfZq5/image.png)](https://postimg.cc/2byfTpzb)
+
+* Method 2
+  * Form a schema for each entity set with all local and inherited attributes
+  * Drawback: name street and city may be stored redundantly for people are are both students and employees 
+
+[![image.png](https://i.postimg.cc/GtHNMxFy/image.png)](https://postimg.cc/MfJdHRr6)
+
+[![image.png](https://i.postimg.cc/T3Frmqws/image.png)](https://postimg.cc/Js3DCXj3)
+
+
