@@ -1178,3 +1178,64 @@ group by rollup(item_name),rollup(color,size)
 * If tsting a functinoal dependecny can be done by considering just one relation, then the cost of testing this constrinat is low
 * When decomposing a realtion is possible that it is no longer possible to do the testing without having to perform a cartesian product
 
+# 10/12
+
+## Boyce-Codd Normal Form
+* A relational schema R is in BCNF with respect to a set F of functinoal dependencies if for all functinoal dependencies in F+ of the form `a->b` where `a is subset R` and `b is subset R` at least one holds 
+  * a is a superkey for R 
+  
+  "Knowing what a is can uniqely identify all other attributes within a table"
+
+Example table is not BCNF:
+
+
+in_dept(**ID**,name,salary,**dept_name**,building,budget)
+
+* Because dept_name -> building,budget
+  * holds on in_dept
+  * but 
+    * dept_name is not a super key
+  * When decomppose in_dept into instructor and department
+    * instructor is in BCNF
+    * department is in BCNF
+
+[![image.png](https://i.postimg.cc/02BsbmJZ/image.png)](https://postimg.cc/56LGrXgF)
+
+"Knowing A, you know B and you know C. But if you only know B, you do not know A"
+
+
+### BCNF and Dependency preservation 
+* It is not always possible to achieve both BCNF and dependency preservation
+  * Consider a schema:
+    * dept_advisor(s_ID,i_ID,department_name)
+    * With function dependencies:
+      * i_ID -> dept_name
+      * s_ID,dept_name -> i_ID
+    * dept_advisor is not in BCNF
+      * i_ID is not a superkey
+    * Any decompositionof dept_advisor will not include all the attributes
+      * s_ID,dept_name -> i_ID
+    * This, the composition is not be dependcy preserving
+
+## Third Normal Form
+* A relation schema R is in third normal form (3NF) if for all:
+  * `a->b in F+`
+* at least on of the following holds
+  * `a->b is trivial (i.e., B exists in a)` (BCNF)
+  * `a` is a superkey for R (BCNF)
+  * Each attrubute A in `b-a` is containted in a candidate key for R
+* If a relation is in BCNF it is in 3NF
+* Third condition is a minimal relaxation of BCNF to ensure dependency preservation
+
+
+### 3NF Example
+* consider a schema 
+  * dept_advisors(s_ID,i_ID,dept_name)
+  * with funcitonal dependencies
+    * i_id-> dept name (1 non-trivial 2 `a` is not superkey of R 3 dept_name is a canidate key YES)
+    * s_ID, dept_name -> i_ID (1 non-trivial 2 YES `a` is superkey)
+
+### Redundancy in 3NF 
+[![image.png](https://i.postimg.cc/kMLtrjnv/image.png)](https://postimg.cc/K4rYBD31)
+
+"In 3NF leads to potential data duplication/inconsistency"
