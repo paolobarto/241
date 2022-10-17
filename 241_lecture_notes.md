@@ -1239,3 +1239,40 @@ in_dept(**ID**,name,salary,**dept_name**,building,budget)
 [![image.png](https://i.postimg.cc/kMLtrjnv/image.png)](https://postimg.cc/K4rYBD31)
 
 "In 3NF leads to potential data duplication/inconsistency"
+
+# 10/17 Don't forget mask! Functional Dependency Theory
+
+## Functional-dependency theory roadmap
+* we now consider the formal throry that tell us which finctional dependencies are implied logically by a given set of functional dependencies
+* We then develop algoritms to generate lossless decomposition into BCNF and 3NF
+* We then devekio algorithms to test if a decomposition is dependency-preserving
+
+### Closure of a Set of Functional Dependencies
+* Giveb a set F of functional dependencies, there are certain other functional dependencies that are logically implied by F.
+  * If A -> B and B->C, then we can infer that A->C
+  * etc.
+* The Set of all functional dependencies **logically implied (not determined)** by F is the **closure** of F
+* We denote the closure of F by F+
+
+
+[![image.png](https://i.postimg.cc/rpMd8LWj/image.png)](https://postimg.cc/hXZ4r62Q)
+
+[![image.png](https://i.postimg.cc/8PrQf4Ln/image.png)](https://postimg.cc/ykBrwFQF)
+
+## Uses of Attribute Closure
+
+* Testing for superkey
+  * To test if `a` is a superkey we compute `a`+ and check if `a`+ contains all attributes of R
+* Testing functional dependencies
+  * to check if a functional dependency a->B holds (or in other words, is in F+), just check if B is subsept of a
+  * That is we compute a+ by using attribute close and then check if it contatins B
+* Computing closure of F
+  * For each gamma in R we find the closure gamma+ and for each S subset of gamma + we outpit a functinoal dependency gamma -> S
+
+## Cononical Cover
+* Suppose that we have a set of functional dependencies F on a relation schema. Whenever a user performas an update on the relation the database system must ensure that the ipdate does not violate any functional dependceis; that is all the functional dependencies in F are satisfied in the new database state
+* If an update violates any functinoal dependencies in the set F, the system must roll back the update
+* We can reduce the effort spent in checking for violations by tsting a simplified set is termed the canonical cover
+* To defin canonical cover we must first define extraneous attributes
+  * An attribute of a functinoal dependency in F is extraneous if we can remove it without changing F+
+
